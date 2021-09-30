@@ -1,7 +1,7 @@
 import express from "express";
 import tables from "../database/models/models.js";
 
-const { Product, Review } = tables;
+const { Product, Review, User } = tables;
 
 const reviewRoute = express.Router();
 
@@ -18,6 +18,7 @@ reviewRoute.get("/", async (req, res, next) => {
   try {
     const getReviews = await Review.findAll({
       include: Product,
+      include: User,
     });
     res.send(getReviews);
   } catch (error) {

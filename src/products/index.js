@@ -1,7 +1,8 @@
 import express from "express";
 import tables from "../database/models/models.js";
-
-const { Product, Review } = tables;
+import s from "sequelize";
+const { Op } = s;
+const { Product, Review, Category, User } = tables;
 const productRoute = express.Router();
 
 productRoute.post("/", async (req, res, next) => {
@@ -14,8 +15,17 @@ productRoute.post("/", async (req, res, next) => {
 });
 
 productRoute.get("/", async (req, res, next) => {
-  const allProducts = await Product.findAll({
-    include: Review,
+  const allProducts = await tables.Product.findAll({
+    include: [Review, { model: Category, through: { attributes: [] } }],
+    where: req.query.search
+      ? {
+          [Op.or]: [
+            // { price: { [Op.iLike]: `%${re.req.query.search}%` } },
+            { name: { [Op.iLike]: `%${req.query.search}%` } },
+            { category: { [Op.iLike]: `%${req.query.search}%` } },
+          ],
+        }
+      : {},
   });
   res.send(allProducts);
 });
