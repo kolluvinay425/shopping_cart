@@ -3,16 +3,12 @@ import all from "sequelize";
 
 const { DataTypes } = all;
 
-const Category = sequelize.define("category", {
-  category_id: {
+const productCategory = sequelize.define("productCategory", {
+  cat_id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
   },
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
 });
-
-export default Category;
+// productCategory.sync({ force: true });
+export default productCategory;

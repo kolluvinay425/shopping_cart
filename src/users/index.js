@@ -2,7 +2,7 @@ import express from "express";
 import User from "../database/models/user.js";
 import models from "../database/models/models.js";
 
-const { Review } = models;
+const { Review, Product } = models;
 const userRoute = express.Router();
 
 userRoute.post("/", async (req, res, next) => {
@@ -15,7 +15,9 @@ userRoute.post("/", async (req, res, next) => {
 });
 userRoute.get("/", async (req, res, next) => {
   try {
-    const userList = await User.findAll({ include: Review });
+    const userList = await User.findAll({
+      include: [Review, { model: Product, through: { attributes: [] } }],
+    });
     res.send(userList);
   } catch (error) {}
 });

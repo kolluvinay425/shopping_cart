@@ -1,8 +1,9 @@
 import express from "express";
 import tables from "../database/models/models.js";
 import s from "sequelize";
+import Cart from "../database/models/cart.js";
 const { Op } = s;
-const { Product, Review, Category, User } = tables;
+const { Product, Review, Category, User, productCategory } = tables;
 const productRoute = express.Router();
 
 productRoute.post("/", async (req, res, next) => {
@@ -16,7 +17,11 @@ productRoute.post("/", async (req, res, next) => {
 
 productRoute.get("/", async (req, res, next) => {
   const allProducts = await tables.Product.findAll({
-    include: [Review, { model: Category, through: { attributes: [] } }],
+    include: [
+      { model: Review, include: { model: User } }, //i must include User inside Review bcoz there is a onetomany relation,if i declare User outside it won't work
+      { model: Category, through: { attributes: [] } },
+    ],
+
     where: req.query.search
       ? {
           [Op.or]: [
@@ -59,6 +64,22 @@ productRoute.put("/:id", async (req, res, next) => {
       returning: true,
     });
     res.send(putReview);
+  } catch (error) {
+    console.log(error);
+  }
+});
+productRoute.post("/category", async (req, res, next) => {
+  try {
+    const data = await productCategory.create(req.body);
+    res.send(data);
+  } catch (error) {
+    console.log(error);
+  }
+});
+productRoute.post("/cart", async (req, res, next) => {
+  try {
+    const data = await Cart.create(req.body);
+    res.send(data);
   } catch (error) {
     console.log(error);
   }
