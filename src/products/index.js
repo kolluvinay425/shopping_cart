@@ -37,7 +37,12 @@ productRoute.get("/", async (req, res, next) => {
 
 productRoute.get("/:id", async (req, res, next) => {
   try {
-    const getReview = await Product.findByPk(req.params.id);
+    const getReview = await Product.findByPk(req.params.id, {
+      include: [
+        { model: Review, include: { model: User } }, //i must include User inside Review bcoz there is a onetomany relation,if i declare User outside it won't work
+        { model: Category, through: { attributes: [] } },
+      ],
+    });
     res.send(getReview);
   } catch (error) {
     console.log(error);
